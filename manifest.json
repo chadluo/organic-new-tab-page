@@ -16,7 +16,8 @@
   "permissions": [
     "storage",
     "bookmarks",
-    "tabs"
+    "tabs",
+    "tabGroups"
   ],
-  "version": "0.1"
+  "version": "0.2"
 }

@@ -66,3 +66,13 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+summary.group-grey { color: #5f6368; }
+summary.group-blue { color: #1a73e8; }
+summary.group-red { color: #d93025; }
+summary.group-yellow { color: #f9ab00; }
+summary.group-green { color: #1e8e3e; }
+summary.group-pink { color: #d01884; }
+summary.group-purple { color: #9334e6; }
+summary.group-cyan { color: #007b83; }
+summary.group-orange { color: #e8710a; }
