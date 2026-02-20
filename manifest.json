@@ -1,0 +1,22 @@
+{
+  "action": {
+    "default_icon": {
+      "128": "icons/icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "description": "A Chrome extension that creates an organic, customizable new tab page experience.",
+  "manifest_version": 3,
+  "name": "Organic New Tab Page",
+  "permissions": [
+    "storage",
+    "bookmarks",
+    "tabs"
+  ],
+  "version": "0.1"
+}
