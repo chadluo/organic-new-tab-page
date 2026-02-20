@@ -1,3 +1,28 @@
+// --- State Persistence ---
+
+const STORAGE_KEY = "detailsState";
+
+type DetailsState = Record<string, boolean>;
+
+async function loadState(): Promise<DetailsState> {
+  const result = await chrome.storage.local.get(STORAGE_KEY);
+  return (result[STORAGE_KEY] as DetailsState) ?? {};
+}
+
+async function saveState(state: DetailsState) {
+  await chrome.storage.local.set({ [STORAGE_KEY]: state });
+}
+
+let detailsState: DetailsState = {};
+
+function trackDetails(details: HTMLDetailsElement, key: string, fallback: boolean) {
+  details.open = detailsState[key] ?? fallback;
+  details.addEventListener("toggle", () => {
+    detailsState[key] = details.open;
+    saveState(detailsState);
+  });
+}
+
 // --- Web Components ---
 
 function faviconUrl(pageUrl: string): string {
@@ -81,6 +106,7 @@ function renderBookmarkNode(
     const summary = document.createElement("summary");
     summary.textContent = node.title || "Bookmarks";
     details.appendChild(summary);
+    trackDetails(details, `bookmark:${node.id}`, false);
 
     const ul = document.createElement("ul");
     for (const child of node.children) {
@@ -135,7 +161,7 @@ async function loadTabs() {
     if (!tabs) continue;
 
     const details = document.createElement("details");
-    details.open = true;
+    trackDetails(details, `window:${win.id}`, true);
 
     const summary = document.createElement("summary");
     const activeTab = tabs.find((t) => t.active);
@@ -156,7 +182,8 @@ async function loadTabs() {
         // Start a new tab group
         const group = groupMap.get(tab.groupId);
         const groupDetails = document.createElement("details");
-        groupDetails.open = !group?.collapsed;
+        const collapsed = group?.collapsed ?? false;
+        trackDetails(groupDetails, `tabgroup:${tab.groupId}`, !collapsed);
         const groupSummary = document.createElement("summary");
         groupSummary.textContent = group?.title || "Unnamed Group";
         if (group?.color) groupSummary.classList.add(`group-${group.color}`);
@@ -187,5 +214,10 @@ async function loadTabs() {
 
 // --- Init ---
 
-loadBookmarks();
-loadTabs();
+async function init() {
+  detailsState = await loadState();
+  loadBookmarks();
+  loadTabs();
+}
+
+init();
