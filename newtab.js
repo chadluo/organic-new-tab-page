@@ -1,13 +1,46 @@
+// --- Web Components ---
+
+class BookmarkLink extends HTMLElement {
+  connectedCallback() {
+    const template = document.getElementById("bookmark-link-template");
+    const content = template.content.cloneNode(true);
+    const a = content.querySelector("a");
+    a.href = this.getAttribute("url");
+    a.textContent = this.getAttribute("title") || this.getAttribute("url");
+    this.appendChild(content);
+  }
+}
+
+class TabLink extends HTMLElement {
+  connectedCallback() {
+    const tabId = Number(this.getAttribute("tab-id"));
+    const windowId = Number(this.getAttribute("window-id"));
+
+    const template = document.getElementById("tab-link-template");
+    const content = template.content.cloneNode(true);
+    const a = content.querySelector("a");
+    a.textContent = this.getAttribute("title") || "Untitled";
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      chrome.tabs.update(tabId, { active: true });
+      chrome.windows.update(windowId, { focused: true });
+    });
+    this.appendChild(content);
+  }
+}
+
+customElements.define("bookmark-link", BookmarkLink);
+customElements.define("tab-link", TabLink);
+
 // --- Bookmarks ---
 
 function renderBookmarkNode(node) {
   if (node.url) {
     const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = node.url;
-    a.textContent = node.title || node.url;
-    a.target = "_blank";
-    li.appendChild(a);
+    const link = document.createElement("bookmark-link");
+    link.setAttribute("url", node.url);
+    link.setAttribute("title", node.title || node.url);
+    li.appendChild(link);
     return li;
   }
 
@@ -64,15 +97,11 @@ function loadTabs() {
       const ul = document.createElement("ul");
       for (const tab of win.tabs) {
         const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = "#";
-        a.textContent = tab.title || tab.url;
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-          chrome.tabs.update(tab.id, { active: true });
-          chrome.windows.update(tab.windowId, { focused: true });
-        });
-        li.appendChild(a);
+        const link = document.createElement("tab-link");
+        link.setAttribute("tab-id", tab.id);
+        link.setAttribute("window-id", tab.windowId);
+        link.setAttribute("title", tab.title || tab.url);
+        li.appendChild(link);
         ul.appendChild(li);
       }
       details.appendChild(ul);
