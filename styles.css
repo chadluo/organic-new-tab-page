@@ -61,6 +61,23 @@ li {
   padding: 2px 0;
 }
 
+bookmark-link,
+tab-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.favicon {
+  flex-shrink: 0;
+}
+
+.hostname {
+  color: #888;
+  font-size: 0.85em;
+  flex-shrink: 0;
+}
+
 a {
   color: #0060df;
   text-decoration: none;

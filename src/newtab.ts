@@ -1,14 +1,37 @@
 // --- Web Components ---
 
+function faviconUrl(pageUrl: string): string {
+  if (!pageUrl) return "";
+  const encoded = encodeURIComponent(pageUrl);
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encoded}&size=16`;
+}
+
+function hostname(pageUrl: string): string {
+  try {
+    return new URL(pageUrl).hostname;
+  } catch {
+    return "";
+  }
+}
+
+function populateLink(content: DocumentFragment, url: string, faviconOverride = "") {
+  const img = content.querySelector(".favicon") as HTMLImageElement;
+  const host = content.querySelector(".hostname") as HTMLSpanElement;
+  img.src = faviconOverride || faviconUrl(url);
+  host.textContent = hostname(url);
+}
+
 class BookmarkLink extends HTMLElement {
   connectedCallback() {
     const template = document.getElementById(
       "bookmark-link-template"
     ) as HTMLTemplateElement;
     const content = template.content.cloneNode(true) as DocumentFragment;
+    const url = this.getAttribute("url") ?? "";
     const a = content.querySelector("a") as HTMLAnchorElement;
-    a.href = this.getAttribute("url") ?? "";
-    a.textContent = this.getAttribute("title") || this.getAttribute("url");
+    a.href = url;
+    a.textContent = this.getAttribute("title") || url;
+    populateLink(content, url);
     this.appendChild(content);
   }
 }
@@ -17,6 +40,7 @@ class TabLink extends HTMLElement {
   connectedCallback() {
     const tabId = Number(this.getAttribute("tab-id"));
     const windowId = Number(this.getAttribute("window-id"));
+    const url = this.getAttribute("url") ?? "";
 
     const template = document.getElementById(
       "tab-link-template"
@@ -29,6 +53,8 @@ class TabLink extends HTMLElement {
       chrome.tabs.update(tabId, { active: true });
       chrome.windows.update(windowId, { focused: true });
     });
+    const faviconOverride = this.getAttribute("favicon") ?? "";
+    populateLink(content, url, faviconOverride);
     this.appendChild(content);
   }
 }
@@ -91,6 +117,8 @@ function createTabLi(tab: chrome.tabs.Tab): HTMLLIElement {
   link.setAttribute("tab-id", String(tab.id));
   link.setAttribute("window-id", String(tab.windowId));
   link.setAttribute("title", tab.title || tab.url || "");
+  link.setAttribute("url", tab.url || "");
+  if (tab.favIconUrl) link.setAttribute("favicon", tab.favIconUrl);
   li.appendChild(link);
   return li;
 }
