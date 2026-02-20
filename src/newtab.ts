@@ -1,16 +1,12 @@
-// @ts-check
-
 // --- Web Components ---
 
 class BookmarkLink extends HTMLElement {
   connectedCallback() {
-    const template = /** @type {HTMLTemplateElement} */ (
-      document.getElementById("bookmark-link-template")
-    );
-    const content = /** @type {DocumentFragment} */ (
-      template.content.cloneNode(true)
-    );
-    const a = /** @type {HTMLAnchorElement} */ (content.querySelector("a"));
+    const template = document.getElementById(
+      "bookmark-link-template"
+    ) as HTMLTemplateElement;
+    const content = template.content.cloneNode(true) as DocumentFragment;
+    const a = content.querySelector("a") as HTMLAnchorElement;
     a.href = this.getAttribute("url") ?? "";
     a.textContent = this.getAttribute("title") || this.getAttribute("url");
     this.appendChild(content);
@@ -22,13 +18,11 @@ class TabLink extends HTMLElement {
     const tabId = Number(this.getAttribute("tab-id"));
     const windowId = Number(this.getAttribute("window-id"));
 
-    const template = /** @type {HTMLTemplateElement} */ (
-      document.getElementById("tab-link-template")
-    );
-    const content = /** @type {DocumentFragment} */ (
-      template.content.cloneNode(true)
-    );
-    const a = /** @type {HTMLAnchorElement} */ (content.querySelector("a"));
+    const template = document.getElementById(
+      "tab-link-template"
+    ) as HTMLTemplateElement;
+    const content = template.content.cloneNode(true) as DocumentFragment;
+    const a = content.querySelector("a") as HTMLAnchorElement;
     a.textContent = this.getAttribute("title") || "Untitled";
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -44,11 +38,9 @@ customElements.define("tab-link", TabLink);
 
 // --- Bookmarks ---
 
-/**
- * @param {chrome.bookmarks.BookmarkTreeNode} node
- * @returns {HTMLElement | null}
- */
-function renderBookmarkNode(node) {
+function renderBookmarkNode(
+  node: chrome.bookmarks.BookmarkTreeNode
+): HTMLElement | null {
   if (node.url) {
     const li = document.createElement("li");
     const link = document.createElement("bookmark-link");
@@ -93,11 +85,7 @@ function loadBookmarks() {
 
 // --- Open Tabs ---
 
-/**
- * @param {chrome.tabs.Tab} tab
- * @returns {HTMLLIElement}
- */
-function createTabLi(tab) {
+function createTabLi(tab: chrome.tabs.Tab): HTMLLIElement {
   const li = document.createElement("li");
   const link = document.createElement("tab-link");
   link.setAttribute("tab-id", String(tab.id));
@@ -133,8 +121,7 @@ async function loadTabs() {
 
     // Group consecutive tabs by their groupId
     let currentGroupId = -1;
-    /** @type {HTMLUListElement | null} */
-    let groupUl = null;
+    let groupUl: HTMLUListElement | null = null;
 
     for (const tab of tabs) {
       if (tab.groupId !== -1 && tab.groupId !== currentGroupId) {
@@ -156,7 +143,7 @@ async function loadTabs() {
 
       if (tab.groupId !== -1) {
         currentGroupId = tab.groupId;
-        /** @type {HTMLUListElement} */ (groupUl).appendChild(createTabLi(tab));
+        groupUl!.appendChild(createTabLi(tab));
       } else {
         // Ungrouped tab
         currentGroupId = -1;

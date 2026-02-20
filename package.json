@@ -4,13 +4,17 @@
   "description": "",
   "main": "background.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf dist",
+    "copy": "mkdir -p dist && cp manifest.json newtab.html styles.css dist/ && cp -r icons dist/",
+    "compile": "tsc",
+    "build": "npm run clean && npm run copy && npm run compile"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@types/chrome": "^0.1.37"
+    "@types/chrome": "^0.1.37",
+    "typescript": "^5.9.3"
   }
 }
