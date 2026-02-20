@@ -12,11 +12,14 @@ body {
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
+}
+
+.section {
+  overflow-y: auto;
+  padding-top: 8px;
 }
 
 h2 {
@@ -32,7 +35,7 @@ details {
   margin-left: 12px;
 }
 
-details > summary {
+details>summary {
   cursor: pointer;
   padding: 4px 0;
   font-weight: 500;
@@ -40,11 +43,11 @@ details > summary {
   list-style-type: disclosure-closed;
 }
 
-details[open] > summary {
+details[open]>summary {
   list-style-type: disclosure-open;
 }
 
-details > summary:hover {
+details>summary:hover {
   color: #0060df;
 }
 
@@ -67,12 +70,38 @@ a:hover {
   text-decoration: underline;
 }
 
-summary.group-grey { color: #5f6368; }
-summary.group-blue { color: #1a73e8; }
-summary.group-red { color: #d93025; }
-summary.group-yellow { color: #f9ab00; }
-summary.group-green { color: #1e8e3e; }
-summary.group-pink { color: #d01884; }
-summary.group-purple { color: #9334e6; }
-summary.group-cyan { color: #007b83; }
-summary.group-orange { color: #e8710a; }
+summary.group-grey {
+  color: #5f6368;
+}
+
+summary.group-blue {
+  color: #1a73e8;
+}
+
+summary.group-red {
+  color: #d93025;
+}
+
+summary.group-yellow {
+  color: #f9ab00;
+}
+
+summary.group-green {
+  color: #1e8e3e;
+}
+
+summary.group-pink {
+  color: #d01884;
+}
+
+summary.group-purple {
+  color: #9334e6;
+}
+
+summary.group-cyan {
+  color: #007b83;
+}
+
+summary.group-orange {
+  color: #e8710a;
+}
