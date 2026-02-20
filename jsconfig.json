@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "lib": ["ES2020", "DOM"],
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "include": ["*.js"]
+}

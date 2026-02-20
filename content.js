@@ -1,3 +1,4 @@
+// @ts-check
 // content.js
 // This script will be injected into the web pages
 

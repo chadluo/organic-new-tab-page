@@ -1,3 +1,4 @@
+// @ts-check
 // background.js
 // This is the background script for your Chrome extension
 

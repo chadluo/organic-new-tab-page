@@ -1,11 +1,17 @@
+// @ts-check
+
 // --- Web Components ---
 
 class BookmarkLink extends HTMLElement {
   connectedCallback() {
-    const template = document.getElementById("bookmark-link-template");
-    const content = template.content.cloneNode(true);
-    const a = content.querySelector("a");
-    a.href = this.getAttribute("url");
+    const template = /** @type {HTMLTemplateElement} */ (
+      document.getElementById("bookmark-link-template")
+    );
+    const content = /** @type {DocumentFragment} */ (
+      template.content.cloneNode(true)
+    );
+    const a = /** @type {HTMLAnchorElement} */ (content.querySelector("a"));
+    a.href = this.getAttribute("url") ?? "";
     a.textContent = this.getAttribute("title") || this.getAttribute("url");
     this.appendChild(content);
   }
@@ -16,9 +22,13 @@ class TabLink extends HTMLElement {
     const tabId = Number(this.getAttribute("tab-id"));
     const windowId = Number(this.getAttribute("window-id"));
 
-    const template = document.getElementById("tab-link-template");
-    const content = template.content.cloneNode(true);
-    const a = content.querySelector("a");
+    const template = /** @type {HTMLTemplateElement} */ (
+      document.getElementById("tab-link-template")
+    );
+    const content = /** @type {DocumentFragment} */ (
+      template.content.cloneNode(true)
+    );
+    const a = /** @type {HTMLAnchorElement} */ (content.querySelector("a"));
     a.textContent = this.getAttribute("title") || "Untitled";
     a.addEventListener("click", (e) => {
       e.preventDefault();
@@ -34,6 +44,10 @@ customElements.define("tab-link", TabLink);
 
 // --- Bookmarks ---
 
+/**
+ * @param {chrome.bookmarks.BookmarkTreeNode} node
+ * @returns {HTMLElement | null}
+ */
 function renderBookmarkNode(node) {
   if (node.url) {
     const li = document.createElement("li");
@@ -65,6 +79,7 @@ function renderBookmarkNode(node) {
 function loadBookmarks() {
   chrome.bookmarks.getTree((tree) => {
     const container = document.getElementById("bookmarks");
+    if (!container) return;
     for (const root of tree) {
       if (root.children) {
         for (const child of root.children) {
@@ -78,12 +93,16 @@ function loadBookmarks() {
 
 // --- Open Tabs ---
 
+/**
+ * @param {chrome.tabs.Tab} tab
+ * @returns {HTMLLIElement}
+ */
 function createTabLi(tab) {
   const li = document.createElement("li");
   const link = document.createElement("tab-link");
-  link.setAttribute("tab-id", tab.id);
-  link.setAttribute("window-id", tab.windowId);
-  link.setAttribute("title", tab.title || tab.url);
+  link.setAttribute("tab-id", String(tab.id));
+  link.setAttribute("window-id", String(tab.windowId));
+  link.setAttribute("title", tab.title || tab.url || "");
   li.appendChild(link);
   return li;
 }
@@ -93,16 +112,20 @@ async function loadTabs() {
   const groups = await chrome.tabGroups.query({});
   const groupMap = new Map(groups.map((g) => [g.id, g]));
   const container = document.getElementById("tabs");
+  if (!container) return;
 
   for (const win of windows) {
+    const tabs = win.tabs;
+    if (!tabs) continue;
+
     const details = document.createElement("details");
     details.open = true;
 
     const summary = document.createElement("summary");
-    const activeTab = win.tabs.find((t) => t.active);
+    const activeTab = tabs.find((t) => t.active);
     const windowLabel = activeTab
-      ? `${activeTab.title} (${win.tabs.length} tabs)`
-      : `Window (${win.tabs.length} tabs)`;
+      ? `${activeTab.title} (${tabs.length} tabs)`
+      : `Window (${tabs.length} tabs)`;
     summary.textContent = windowLabel;
     details.appendChild(summary);
 
@@ -110,14 +133,14 @@ async function loadTabs() {
 
     // Group consecutive tabs by their groupId
     let currentGroupId = -1;
-    let groupDetails = null;
+    /** @type {HTMLUListElement | null} */
     let groupUl = null;
 
-    for (const tab of win.tabs) {
+    for (const tab of tabs) {
       if (tab.groupId !== -1 && tab.groupId !== currentGroupId) {
         // Start a new tab group
         const group = groupMap.get(tab.groupId);
-        groupDetails = document.createElement("details");
+        const groupDetails = document.createElement("details");
         groupDetails.open = !group?.collapsed;
         const groupSummary = document.createElement("summary");
         groupSummary.textContent = group?.title || "Unnamed Group";
@@ -132,15 +155,11 @@ async function loadTabs() {
       }
 
       if (tab.groupId !== -1) {
-        // Tab belongs to a group — if same group continues, reuse groupUl
-        if (tab.groupId !== currentGroupId) {
-          currentGroupId = tab.groupId;
-        }
-        groupUl.appendChild(createTabLi(tab));
+        currentGroupId = tab.groupId;
+        /** @type {HTMLUListElement} */ (groupUl).appendChild(createTabLi(tab));
       } else {
         // Ungrouped tab
         currentGroupId = -1;
-        groupDetails = null;
         groupUl = null;
         ul.appendChild(createTabLi(tab));
       }
