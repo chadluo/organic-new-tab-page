@@ -6,25 +6,25 @@
   <link rel="stylesheet" href="styles.css">
   <title>New Tab</title>
 </head>
-<body>
+<body class="font-sans m-0 p-6 bg-surface text-text leading-relaxed">
   <template id="bookmark-link-template">
-    <img class="favicon" width="16" height="16" alt="">
+    <img class="favicon shrink-0 size-4" alt="">
     <a target="_blank"></a>
-    <span class="hostname"></span>
+    <span class="hostname text-hostname text-[0.85em] shrink-0"></span>
   </template>
 
   <template id="tab-link-template">
-    <img class="favicon" width="16" height="16" alt="">
+    <img class="favicon shrink-0 size-4" alt="">
     <a href="#"></a>
-    <span class="hostname"></span>
+    <span class="hostname text-hostname text-[0.85em] shrink-0"></span>
   </template>
 
-  <div class="container">
-    <div class="section">
+  <div class="grid grid-cols-2 gap-8">
+    <div class="overflow-y-auto pt-2">
       <h2>Bookmarks</h2>
       <div id="bookmarks"></div>
     </div>
-    <div class="section">
+    <div class="overflow-y-auto pt-2">
       <h2>Open Tabs</h2>
       <div id="tabs"></div>
     </div>

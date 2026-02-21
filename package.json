@@ -5,16 +5,19 @@
   "main": "background.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "copy": "mkdir -p dist && cp manifest.json newtab.html styles.css dist/ && cp -r icons dist/",
+    "copy": "mkdir -p dist && cp manifest.json newtab.html dist/ && cp -r icons dist/",
+    "css": "npx @tailwindcss/cli -i styles.css -o dist/styles.css",
     "compile": "tsc",
-    "build": "npm run clean && npm run copy && npm run compile"
+    "build": "npm run clean && npm run copy && npm run compile && npm run css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@tailwindcss/cli": "^4.2.0",
     "@types/chrome": "^0.1.37",
+    "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3"
   }
 }
