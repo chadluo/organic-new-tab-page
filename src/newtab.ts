@@ -124,6 +124,7 @@ function loadBookmarks() {
   chrome.bookmarks.getTree((tree) => {
     const container = document.getElementById("bookmarks");
     if (!container) return;
+    container.innerHTML = "";
     for (const root of tree) {
       if (root.children) {
         for (const child of root.children) {
@@ -155,6 +156,7 @@ async function loadTabs() {
   const groupMap = new Map(groups.map((g) => [g.id, g]));
   const container = document.getElementById("tabs");
   if (!container) return;
+  container.innerHTML = "";
 
   for (const win of windows) {
     const tabs = win.tabs;
@@ -211,6 +213,22 @@ async function loadTabs() {
     container.appendChild(details);
   }
 }
+
+// --- Live Updates ---
+
+chrome.tabs.onCreated.addListener(loadTabs);
+chrome.tabs.onRemoved.addListener(loadTabs);
+chrome.tabs.onUpdated.addListener(loadTabs);
+chrome.tabs.onMoved.addListener(loadTabs);
+chrome.tabs.onActivated.addListener(loadTabs);
+chrome.tabGroups.onCreated.addListener(loadTabs);
+chrome.tabGroups.onUpdated.addListener(loadTabs);
+chrome.tabGroups.onRemoved.addListener(loadTabs);
+
+chrome.bookmarks.onCreated.addListener(loadBookmarks);
+chrome.bookmarks.onRemoved.addListener(loadBookmarks);
+chrome.bookmarks.onChanged.addListener(loadBookmarks);
+chrome.bookmarks.onMoved.addListener(loadBookmarks);
 
 // --- Init ---
 
