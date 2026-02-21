@@ -4,19 +4,35 @@
   "description": "",
   "main": "background.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "copy": "mkdir -p dist && cp manifest.json newtab.html dist/ && cp -r icons dist/",
+    "clean": "cross-os clean",
+    "copy": "cross-os copy",
     "css": "npx @tailwindcss/cli -i styles.css -o dist/styles.css",
     "compile": "tsc",
     "build": "npm run clean && npm run copy && npm run compile && npm run css"
+  },
+  "cross-os": {
+    "clean": {
+      "linux": "rm -rf dist",
+      "darwin": "rm -rf dist",
+      "win32": "if exist dist rmdir /s /q dist"
+    },
+    "copy": {
+      "linux": "mkdir -p dist && cp manifest.json newtab.html dist/ && cp -r icons dist/",
+      "darwin": "mkdir -p dist && cp manifest.json newtab.html dist/ && cp -r icons dist/",
+      "win32": "mkdir dist && copy manifest.json dist\\ && copy newtab.html dist\\ && xcopy icons dist\\icons /s /i"
+    }
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@parcel/watcher-win32-x64": "2.5.6",
     "@tailwindcss/cli": "^4.2.0",
+    "@tailwindcss/oxide-win32-x64-msvc": "4.2.0",
     "@types/chrome": "^0.1.37",
+    "cross-os": "^1.5.0",
+    "lightningcss-win32-x64-msvc": "1.31.1",
     "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3"
   }
