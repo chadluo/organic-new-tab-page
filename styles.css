@@ -39,25 +39,17 @@ html.dark {
 }
 
 @layer base {
-  h2 {
-    @apply text-[1.1rem] font-semibold m-0 mb-3 text-heading uppercase tracking-wider;
-  }
-
   details {
     @apply ml-3;
   }
 
   details > summary {
-    @apply cursor-pointer py-1 font-medium text-summary;
+    @apply cursor-pointer py-1 font-medium text-summary hover:text-link;
     list-style-type: disclosure-closed;
   }
 
   details[open] > summary {
     list-style-type: disclosure-open;
-  }
-
-  details > summary:hover {
-    @apply text-link;
   }
 
   ul {
@@ -67,20 +59,12 @@ html.dark {
   li {
     @apply py-0.5;
   }
-
-  a {
-    @apply text-link no-underline;
-  }
-
-  a:hover {
-    @apply underline;
-  }
 }
 
 @layer components {
   bookmark-link,
   tab-link {
-    @apply flex items-center gap-1.5;
+    @apply flex items-start gap-1.5;
   }
 }
 
