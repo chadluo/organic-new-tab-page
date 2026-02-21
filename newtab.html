@@ -19,14 +19,12 @@
     <span class="hostname text-hostname text-[0.85em] shrink-0"></span>
   </template>
 
-  <div class="grid grid-cols-2 gap-8">
-    <div class="overflow-y-auto pt-2">
-      <h2>Bookmarks</h2>
-      <div id="bookmarks"></div>
+  <div id="layout-grid" class="grid gap-x-8">
+    <div id="bookmarks-section" class="grid grid-cols-subgrid content-start pt-2">
+      <h2 class="col-span-full">Bookmarks</h2>
     </div>
-    <div class="overflow-y-auto pt-2">
-      <h2>Open Tabs</h2>
-      <div id="tabs"></div>
+    <div id="tabs-section" class="grid grid-cols-subgrid content-start pt-2">
+      <h2 class="col-span-full">Open Tabs</h2>
     </div>
   </div>
   <button id="settings-btn" title="Settings" class="block mx-auto mt-8 p-2 rounded-full cursor-pointer border-none text-hostname transition-[background] duration-150" style="background:color-mix(in srgb,var(--color-text) 10%,transparent);">
@@ -44,6 +42,21 @@
         <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="system" checked> System</label>
         <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="light"> Light</label>
         <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="dark"> Dark</label>
+      </div>
+    </fieldset>
+    <fieldset class="border-none p-0 m-0 mt-6">
+      <legend class="font-medium mb-3">Layout</legend>
+      <div class="flex flex-col gap-3">
+        <label class="flex items-center gap-3">
+          <span class="w-36">Bookmark columns</span>
+          <input type="range" name="bookmarkColumns" min="1" max="2" value="1" class="flex-1">
+          <span id="bookmarkColumns-value" class="w-4 text-center">1</span>
+        </label>
+        <label class="flex items-center gap-3">
+          <span class="w-36">Tab columns</span>
+          <input type="range" name="tabColumns" min="1" max="4" value="1" class="flex-1">
+          <span id="tabColumns-value" class="w-4 text-center">1</span>
+        </label>
       </div>
     </fieldset>
   </dialog>

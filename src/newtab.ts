@@ -6,9 +6,11 @@ type Theme = "system" | "light" | "dark";
 
 interface UserSettings {
   theme: Theme;
+  bookmarkColumns: number;
+  tabColumns: number;
 }
 
-const defaultSettings: UserSettings = { theme: "system" };
+const defaultSettings: UserSettings = { theme: "system", bookmarkColumns: 1, tabColumns: 1 };
 
 async function loadSettings(): Promise<UserSettings> {
   const result = await chrome.storage.local.get(SETTINGS_KEY);
@@ -71,6 +73,91 @@ function initSettings(settings: UserSettings) {
       settings.theme = theme;
     });
   });
+
+  // Layout sliders
+  const bookmarkSlider = dialog.querySelector<HTMLInputElement>('input[name="bookmarkColumns"]')!;
+  const tabSlider = dialog.querySelector<HTMLInputElement>('input[name="tabColumns"]')!;
+  const bookmarkValue = document.getElementById("bookmarkColumns-value")!;
+  const tabValue = document.getElementById("tabColumns-value")!;
+
+  bookmarkSlider.value = String(settings.bookmarkColumns);
+  bookmarkValue.textContent = String(settings.bookmarkColumns);
+  tabSlider.value = String(settings.tabColumns);
+  tabValue.textContent = String(settings.tabColumns);
+
+  bookmarkSlider.addEventListener("input", () => {
+    const val = Number(bookmarkSlider.value);
+    bookmarkValue.textContent = String(val);
+    settings.bookmarkColumns = val;
+    currentSettings = settings;
+    saveSettings(settings);
+    applyLayout(settings);
+    loadBookmarks();
+  });
+
+  tabSlider.addEventListener("input", () => {
+    const val = Number(tabSlider.value);
+    tabValue.textContent = String(val);
+    settings.tabColumns = val;
+    currentSettings = settings;
+    saveSettings(settings);
+    applyLayout(settings);
+    loadTabs();
+  });
+}
+
+let currentSettings: UserSettings = defaultSettings;
+let effectiveBookmarkCols = 1;
+
+function getBreakpointMaxColumns(): number {
+  const width = window.innerWidth;
+  if (width < 768) return 1;
+  if (width < 1024) return 2;
+  if (width < 1280) return 3;
+  return 6;
+}
+
+function applyLayout(settings: UserSettings) {
+  const configTotal = settings.bookmarkColumns + settings.tabColumns;
+  const maxCols = getBreakpointMaxColumns();
+  const available = Math.min(configTotal, maxCols);
+
+  const grid = document.getElementById("layout-grid")!;
+  const bookmarksSection = document.getElementById("bookmarks-section")!;
+  const tabsSection = document.getElementById("tabs-section")!;
+
+  let bCols: number, tCols: number;
+
+  if (available <= 1) {
+    // Stack vertically
+    bCols = 1;
+    tCols = 1;
+    grid.style.gridTemplateColumns = "1fr";
+  } else {
+    // Distribute proportionally by closest ratio
+    const ratio = settings.bookmarkColumns / configTotal;
+    bCols = Math.max(1, Math.round(available * ratio));
+    tCols = available - bCols;
+    if (tCols < 1) { tCols = 1; bCols = available - 1; }
+    grid.style.gridTemplateColumns = `repeat(${available}, 1fr)`;
+  }
+
+  bookmarksSection.style.gridColumn = `span ${bCols}`;
+  tabsSection.style.gridColumn = `span ${tCols}`;
+
+  const prevEffective = effectiveBookmarkCols;
+  effectiveBookmarkCols = bCols;
+  if (prevEffective !== bCols) {
+    loadBookmarks();
+  }
+}
+
+function setupResponsiveLayout() {
+  for (const bp of [768, 1024, 1280]) {
+    window.matchMedia(`(min-width: ${bp}px)`).addEventListener("change", () => {
+      applyLayout(currentSettings);
+    });
+  }
 }
 
 // --- State Persistence ---
@@ -197,16 +284,38 @@ function renderBookmarkNode(
 
 function loadBookmarks() {
   chrome.bookmarks.getTree((tree) => {
-    const container = document.getElementById("bookmarks");
-    if (!container) return;
-    container.innerHTML = "";
+    const section = document.getElementById("bookmarks-section")!;
+    // Keep the h2, remove everything else
+    while (section.children.length > 1) section.lastChild!.remove();
+
+    // Collect top-level folders (Bookmarks Bar, Other Bookmarks)
+    const topFolders: chrome.bookmarks.BookmarkTreeNode[] = [];
     for (const root of tree) {
       if (root.children) {
         for (const child of root.children) {
-          const rendered = renderBookmarkNode(child);
-          if (rendered) container.appendChild(rendered);
+          topFolders.push(child);
         }
       }
+    }
+
+    if (effectiveBookmarkCols >= 2 && topFolders.length >= 2) {
+      // Each top-level folder gets its own column div
+      for (const folder of topFolders) {
+        const col = document.createElement("div");
+        col.className = "overflow-y-auto";
+        const rendered = renderBookmarkNode(folder);
+        if (rendered) col.appendChild(rendered);
+        section.appendChild(col);
+      }
+    } else {
+      // Single column: all folders in one div
+      const col = document.createElement("div");
+      col.className = "overflow-y-auto";
+      for (const folder of topFolders) {
+        const rendered = renderBookmarkNode(folder);
+        if (rendered) col.appendChild(rendered);
+      }
+      section.appendChild(col);
     }
   });
 }
@@ -229,9 +338,9 @@ async function loadTabs() {
   const windows = await chrome.windows.getAll({ populate: true });
   const groups = await chrome.tabGroups.query({});
   const groupMap = new Map(groups.map((g) => [g.id, g]));
-  const container = document.getElementById("tabs");
-  if (!container) return;
-  container.innerHTML = "";
+  const section = document.getElementById("tabs-section")!;
+  // Keep the h2, remove everything else
+  while (section.children.length > 1) section.lastChild!.remove();
 
   for (const win of windows) {
     const tabs = win.tabs;
@@ -285,7 +394,8 @@ async function loadTabs() {
     }
 
     details.appendChild(ul);
-    container.appendChild(details);
+    // Each window details is a direct grid item in the subgrid
+    section.appendChild(details);
   }
 }
 
@@ -309,7 +419,10 @@ chrome.bookmarks.onMoved.addListener(loadBookmarks);
 
 async function init() {
   const settings = await loadSettings();
+  currentSettings = settings;
   initSettings(settings);
+  applyLayout(settings);
+  setupResponsiveLayout();
   detailsState = await loadState();
   loadBookmarks();
   loadTabs();
