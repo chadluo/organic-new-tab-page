@@ -1,3 +1,78 @@
+// --- Settings ---
+
+const SETTINGS_KEY = "userSettings";
+
+type Theme = "system" | "light" | "dark";
+
+interface UserSettings {
+  theme: Theme;
+}
+
+const defaultSettings: UserSettings = { theme: "system" };
+
+async function loadSettings(): Promise<UserSettings> {
+  const result = await chrome.storage.local.get(SETTINGS_KEY);
+  return { ...defaultSettings, ...(result[SETTINGS_KEY] as Partial<UserSettings>) };
+}
+
+async function saveSettings(settings: UserSettings) {
+  await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
+}
+
+let mediaQuery: MediaQueryList | null = null;
+
+function applyTheme(theme: Theme) {
+  // Clean up previous system listener
+  if (mediaQuery) {
+    mediaQuery.removeEventListener("change", onSystemThemeChange);
+    mediaQuery = null;
+  }
+
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    // system
+    mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    document.documentElement.classList.toggle("dark", mediaQuery.matches);
+    mediaQuery.addEventListener("change", onSystemThemeChange);
+  }
+}
+
+function onSystemThemeChange(e: MediaQueryListEvent) {
+  document.documentElement.classList.toggle("dark", e.matches);
+}
+
+function initSettings(settings: UserSettings) {
+  applyTheme(settings.theme);
+
+  const btn = document.getElementById("settings-btn")!;
+  const dialog = document.getElementById("settings-dialog") as HTMLDialogElement;
+  const closeBtn = dialog.querySelector(".close-btn")!;
+  const radios = dialog.querySelectorAll<HTMLInputElement>('input[name="theme"]');
+
+  // Set initial radio state
+  radios.forEach((radio) => {
+    radio.checked = radio.value === settings.theme;
+  });
+
+  btn.addEventListener("click", () => dialog.showModal());
+  closeBtn.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  radios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const theme = radio.value as Theme;
+      applyTheme(theme);
+      saveSettings({ ...settings, theme });
+      settings.theme = theme;
+    });
+  });
+}
+
 // --- State Persistence ---
 
 const STORAGE_KEY = "detailsState";
@@ -233,6 +308,8 @@ chrome.bookmarks.onMoved.addListener(loadBookmarks);
 // --- Init ---
 
 async function init() {
+  const settings = await loadSettings();
+  initSettings(settings);
   detailsState = await loadState();
   loadBookmarks();
   loadTabs();

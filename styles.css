@@ -19,25 +19,23 @@
   --color-group-orange: #e8710a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-link: #6db3f2;
-    --color-heading: #aaa;
-    --color-summary: #ccc;
-    --color-hostname: #888;
-    --color-surface: #1a1a1a;
-    --color-text: #e0e0e0;
+html.dark {
+  --color-link: #6db3f2;
+  --color-heading: #aaa;
+  --color-summary: #ccc;
+  --color-hostname: #888;
+  --color-surface: #1a1a1a;
+  --color-text: #e0e0e0;
 
-    --color-group-grey: #9aa0a6;
-    --color-group-blue: #8ab4f8;
-    --color-group-red: #f28b82;
-    --color-group-yellow: #fdd663;
-    --color-group-green: #81c995;
-    --color-group-pink: #f48fb1;
-    --color-group-purple: #c58af9;
-    --color-group-cyan: #78d9ec;
-    --color-group-orange: #fcad70;
-  }
+  --color-group-grey: #9aa0a6;
+  --color-group-blue: #8ab4f8;
+  --color-group-red: #f28b82;
+  --color-group-yellow: #fdd663;
+  --color-group-green: #81c995;
+  --color-group-pink: #f48fb1;
+  --color-group-purple: #c58af9;
+  --color-group-cyan: #78d9ec;
+  --color-group-orange: #fcad70;
 }
 
 @layer base {
