@@ -43,12 +43,12 @@ html.dark {
     @apply ml-3;
   }
 
-  details > summary {
+  details>summary {
     @apply cursor-pointer py-1 font-medium text-summary hover:text-link;
     list-style-type: disclosure-closed;
   }
 
-  details[open] > summary {
+  details[open]>summary {
     list-style-type: disclosure-open;
   }
 
@@ -62,6 +62,7 @@ html.dark {
 }
 
 @layer components {
+
   bookmark-link,
   tab-link {
     @apply flex items-start gap-1.5;
