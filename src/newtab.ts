@@ -349,22 +349,22 @@ async function loadTabs() {
     const details = document.createElement("details");
     trackDetails(details, `window:${win.id}`, true);
 
-    const summary = document.createElement("summary");
     const activeTab = tabs.find((t) => t.active);
     const windowLabel = activeTab
       ? `${activeTab.title} (${tabs.length} tabs)`
       : `Window (${tabs.length} tabs)`;
+    const summary = document.createElement("summary");
     summary.textContent = windowLabel;
     details.appendChild(summary);
 
     const ul = document.createElement("ul");
 
     // Group consecutive tabs by their groupId
-    let currentGroupId = -1;
+    let currentGroupId: number = chrome.tabGroups.TAB_GROUP_ID_NONE;
     let groupUl: HTMLUListElement | null = null;
 
     for (const tab of tabs) {
-      if (tab.groupId !== -1 && tab.groupId !== currentGroupId) {
+      if (tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE && tab.groupId !== currentGroupId) {
         // Start a new tab group
         const group = groupMap.get(tab.groupId);
         const groupDetails = document.createElement("details");
@@ -382,12 +382,12 @@ async function loadTabs() {
         ul.appendChild(li);
       }
 
-      if (tab.groupId !== -1) {
+      if (tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
         currentGroupId = tab.groupId;
         groupUl!.appendChild(createTabLi(tab));
       } else {
         // Ungrouped tab
-        currentGroupId = -1;
+        currentGroupId = chrome.tabGroups.TAB_GROUP_ID_NONE;
         groupUl = null;
         ul.appendChild(createTabLi(tab));
       }
