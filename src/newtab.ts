@@ -208,6 +208,15 @@ function populateLink(content: DocumentFragment, url: string, faviconOverride = 
   host.textContent = hostname(url);
 }
 
+function setSoftWrappingTitle(el: HTMLElement, title: string) {
+  const parts = title.split("/");
+  el.appendChild(document.createTextNode(parts[0]));
+  for (let i = 1; i < parts.length; i++) {
+    el.appendChild(document.createElement("wbr"));
+    el.appendChild(document.createTextNode("/" + parts[i]));
+  }
+}
+
 class BookmarkLink extends HTMLElement {
   connectedCallback() {
     const template = document.getElementById(
@@ -217,7 +226,7 @@ class BookmarkLink extends HTMLElement {
     const url = this.getAttribute("url") ?? "";
     const a = content.querySelector("a") as HTMLAnchorElement;
     a.href = url;
-    a.textContent = this.getAttribute("title") || url;
+    setSoftWrappingTitle(a, this.getAttribute("title") || url);
     populateLink(content, url);
     this.appendChild(content);
   }
@@ -234,7 +243,7 @@ class TabLink extends HTMLElement {
     ) as HTMLTemplateElement;
     const content = template.content.cloneNode(true) as DocumentFragment;
     const a = content.querySelector("a") as HTMLAnchorElement;
-    a.textContent = this.getAttribute("title") || "Untitled";
+    setSoftWrappingTitle(a, this.getAttribute("title") || "Untitled");
     a.addEventListener("click", (e) => {
       e.preventDefault();
       chrome.tabs.update(tabId, { active: true });
