@@ -336,6 +336,7 @@ function createTabLi(tab: chrome.tabs.Tab): HTMLLIElement {
 
 async function loadTabs() {
   const windows = await chrome.windows.getAll({ populate: true });
+  const currentWindow = await chrome.windows.getCurrent();
   const groups = await chrome.tabGroups.query({});
   const groupMap = new Map(groups.map((g) => [g.id, g]));
   const section = document.getElementById("tabs-section")!;
@@ -355,6 +356,9 @@ async function loadTabs() {
       : `Window (${tabs.length} tabs)`;
     const summary = document.createElement("summary");
     summary.textContent = windowLabel;
+    if (win.id === currentWindow.id) {
+      summary.classList.add("font-bold", "current-window");
+    }
     details.appendChild(summary);
 
     const ul = document.createElement("ul");

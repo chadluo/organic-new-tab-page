@@ -48,6 +48,14 @@ html.dark {
     list-style-type: disclosure-closed;
   }
 
+  details>summary.current-window {
+    color: #000;
+  }
+
+  html.dark details>summary.current-window {
+    color: #fff;
+  }
+
   details[open]>summary {
     list-style-type: disclosure-open;
   }
