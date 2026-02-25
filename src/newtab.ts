@@ -352,6 +352,13 @@ async function loadTabs() {
   // Keep the h2, remove everything else
   while (section.children.length > 1) section.lastChild!.remove();
 
+  // Sort windows by most recently accessed tab, latest first
+  windows.sort((a, b) => {
+    const lastA = Math.max(...(a.tabs ?? []).map((t) => t.lastAccessed ?? 0));
+    const lastB = Math.max(...(b.tabs ?? []).map((t) => t.lastAccessed ?? 0));
+    return lastB - lastA;
+  });
+
   for (const win of windows) {
     const tabs = win.tabs;
     if (!tabs) continue;
