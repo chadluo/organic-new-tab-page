@@ -49,20 +49,12 @@ function onSystemThemeChange(e: MediaQueryListEvent) {
 function initSettings(settings: UserSettings) {
   applyTheme(settings.theme);
 
-  const btn = document.getElementById("settings-btn")!;
-  const dialog = document.getElementById("settings-dialog") as HTMLDialogElement;
-  const closeBtn = dialog.querySelector(".close-btn")!;
-  const radios = dialog.querySelectorAll<HTMLInputElement>('input[name="theme"]');
+  const bar = document.getElementById("settings-bar")!;
+  const radios = bar.querySelectorAll<HTMLInputElement>('input[name="theme"]');
 
   // Set initial radio state
   radios.forEach((radio) => {
     radio.checked = radio.value === settings.theme;
-  });
-
-  btn.addEventListener("click", () => dialog.showModal());
-  closeBtn.addEventListener("click", () => dialog.close());
-  dialog.addEventListener("click", (e) => {
-    if (e.target === dialog) dialog.close();
   });
 
   radios.forEach((radio) => {
@@ -75,8 +67,8 @@ function initSettings(settings: UserSettings) {
   });
 
   // Layout sliders
-  const bookmarkSlider = dialog.querySelector<HTMLInputElement>('input[name="bookmarkColumns"]')!;
-  const tabSlider = dialog.querySelector<HTMLInputElement>('input[name="tabColumns"]')!;
+  const bookmarkSlider = bar.querySelector<HTMLInputElement>('input[name="bookmarkColumns"]')!;
+  const tabSlider = bar.querySelector<HTMLInputElement>('input[name="tabColumns"]')!;
   const bookmarkValue = document.getElementById("bookmarkColumns-value")!;
   const tabValue = document.getElementById("tabColumns-value")!;
 

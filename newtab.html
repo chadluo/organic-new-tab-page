@@ -8,7 +8,7 @@
   <title>New Tab</title>
 </head>
 
-<body class="font-sans m-0 p-6 bg-surface text-text leading-relaxed">
+<body class="font-sans m-0 p-6 pb-16 bg-surface text-text leading-relaxed">
   <template id="bookmark-link-template">
     <img class="favicon shrink-0 size-4" alt="">
     <span class="min-w-0 leading-4"><a class="text-link no-underline hover:underline"></a> <span
@@ -31,43 +31,32 @@
       </h2>
     </div>
   </div>
-  <button id="settings-btn" title="Settings"
-    class="block mx-auto mt-8 p-2 rounded-full cursor-pointer border-none text-hostname transition-[background] duration-150"
-    style="background:color-mix(in srgb,var(--color-text) 10%,transparent);">
-    <span class="text-xl leading-none">⚙️</span>
-  </button>
-
-  <dialog id="settings-dialog" class="rounded-lg p-8 border-none m-auto bg-surface text-text min-w-md">
-    <button class="close-btn absolute top-3 right-3 p-1 rounded cursor-pointer border-none bg-transparent text-hostname"
-      title="Close">&#x2715;</button>
-    <h3 class="text-base font-semibold m-0 mb-6 text-heading">Settings</h3>
-    <fieldset class="border-none p-0 m-0">
-      <legend class="font-medium mb-3">Theme</legend>
-      <div class="flex gap-4">
-        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="system" checked>
-          System</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="light">
-          Light</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="theme" value="dark">
-          Dark</label>
-      </div>
-    </fieldset>
-    <fieldset class="border-none p-0 m-0 mt-6">
-      <legend class="font-medium mb-3">Layout</legend>
-      <div class="flex flex-col gap-3">
-        <label class="flex items-center gap-3">
-          <span class="w-36">Bookmark columns</span>
-          <input type="range" name="bookmarkColumns" min="1" max="2" value="1" class="flex-1">
-          <span id="bookmarkColumns-value" class="w-4 text-center">1</span>
-        </label>
-        <label class="flex items-center gap-3">
-          <span class="w-36">Tab columns</span>
-          <input type="range" name="tabColumns" min="1" max="4" value="1" class="flex-1">
-          <span id="tabColumns-value" class="w-4 text-center">1</span>
-        </label>
-      </div>
-    </fieldset>
-  </dialog>
+  <div id="settings-bar"
+    class="fixed bottom-0 left-0 w-screen flex items-center justify-center gap-8 py-3 text-hostname text-sm bg-surface border-t border-hostname/10">
+    <div class="flex items-center gap-3">
+      <span>Theme</span>
+      <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="theme" value="system" checked>
+        System</label>
+      <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="theme" value="light">
+        Light</label>
+      <label class="flex items-center gap-1.5 cursor-pointer"><input type="radio" name="theme" value="dark">
+        Dark</label>
+    </div>
+    <div class="flex items-center gap-3">
+      <label class="flex items-center gap-2">
+        <span>Bookmark columns</span>
+        <input type="range" name="bookmarkColumns" min="1" max="2" value="1">
+        <span id="bookmarkColumns-value" class="w-4 text-center">1</span>
+      </label>
+    </div>
+    <div class="flex items-center gap-3">
+      <label class="flex items-center gap-2">
+        <span>Tab columns</span>
+        <input type="range" name="tabColumns" min="1" max="4" value="1">
+        <span id="tabColumns-value" class="w-4 text-center">1</span>
+      </label>
+    </div>
+  </div>
 
   <script src="newtab.js"></script>
 </body>
