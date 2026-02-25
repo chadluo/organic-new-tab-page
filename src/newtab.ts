@@ -84,7 +84,6 @@ function initSettings(settings: UserSettings) {
     currentSettings = settings;
     saveSettings(settings);
     applyLayout(settings);
-    loadBookmarks();
   });
 
   tabSlider.addEventListener("input", () => {
@@ -94,62 +93,19 @@ function initSettings(settings: UserSettings) {
     currentSettings = settings;
     saveSettings(settings);
     applyLayout(settings);
-    loadTabs();
   });
 }
 
 let currentSettings: UserSettings = defaultSettings;
-let effectiveBookmarkCols = 1;
-
-function getBreakpointMaxColumns(): number {
-  const width = window.innerWidth;
-  if (width < 768) return 1;
-  if (width < 1024) return 2;
-  if (width < 1280) return 3;
-  return 6;
-}
 
 function applyLayout(settings: UserSettings) {
-  const configTotal = settings.bookmarkColumns + settings.tabColumns;
-  const maxCols = getBreakpointMaxColumns();
-  const available = Math.min(configTotal, maxCols);
-
   const grid = document.getElementById("layout-grid")!;
   const bookmarksSection = document.getElementById("bookmarks-section")!;
   const tabsSection = document.getElementById("tabs-section")!;
 
-  let bCols: number, tCols: number;
-
-  if (available <= 1) {
-    // Stack vertically
-    bCols = 1;
-    tCols = 1;
-    grid.style.gridTemplateColumns = "1fr";
-  } else {
-    // Distribute proportionally by closest ratio
-    const ratio = settings.bookmarkColumns / configTotal;
-    bCols = Math.max(1, Math.round(available * ratio));
-    tCols = available - bCols;
-    if (tCols < 1) { tCols = 1; bCols = available - 1; }
-    grid.style.gridTemplateColumns = `repeat(${available}, 1fr)`;
-  }
-
-  bookmarksSection.style.gridColumn = `span ${bCols}`;
-  tabsSection.style.gridColumn = `span ${tCols}`;
-
-  const prevEffective = effectiveBookmarkCols;
-  effectiveBookmarkCols = bCols;
-  if (prevEffective !== bCols) {
-    loadBookmarks();
-  }
-}
-
-function setupResponsiveLayout() {
-  for (const bp of [768, 1024, 1280]) {
-    window.matchMedia(`(min-width: ${bp}px)`).addEventListener("change", () => {
-      applyLayout(currentSettings);
-    });
-  }
+  grid.style.gridTemplateColumns = `${settings.bookmarkColumns}fr ${settings.tabColumns}fr`;
+  bookmarksSection.style.columns = String(settings.bookmarkColumns);
+  tabsSection.style.columns = String(settings.tabColumns);
 }
 
 // --- State Persistence ---
@@ -286,8 +242,7 @@ function renderBookmarkNode(
 function loadBookmarks() {
   chrome.bookmarks.getTree((tree) => {
     const section = document.getElementById("bookmarks-section")!;
-    // Keep the h2, remove everything else
-    while (section.children.length > 1) section.lastChild!.remove();
+    section.replaceChildren();
 
     // Collect top-level folders (Bookmarks Bar, Other Bookmarks)
     const topFolders: chrome.bookmarks.BookmarkTreeNode[] = [];
@@ -299,24 +254,9 @@ function loadBookmarks() {
       }
     }
 
-    if (effectiveBookmarkCols >= 2 && topFolders.length >= 2) {
-      // Each top-level folder gets its own column div
-      for (const folder of topFolders) {
-        const col = document.createElement("div");
-        col.className = "overflow-y-auto";
-        const rendered = renderBookmarkNode(folder);
-        if (rendered) col.appendChild(rendered);
-        section.appendChild(col);
-      }
-    } else {
-      // Single column: all folders in one div
-      const col = document.createElement("div");
-      col.className = "overflow-y-auto";
-      for (const folder of topFolders) {
-        const rendered = renderBookmarkNode(folder);
-        if (rendered) col.appendChild(rendered);
-      }
-      section.appendChild(col);
+    for (const folder of topFolders) {
+      const rendered = renderBookmarkNode(folder);
+      if (rendered) section.appendChild(rendered);
     }
   });
 }
@@ -341,8 +281,7 @@ async function loadTabs() {
   const groups = await chrome.tabGroups.query({});
   const groupMap = new Map(groups.map((g) => [g.id, g]));
   const section = document.getElementById("tabs-section")!;
-  // Keep the h2, remove everything else
-  while (section.children.length > 1) section.lastChild!.remove();
+  section.replaceChildren();
 
   // Sort windows by most recently accessed tab, latest first
   windows.sort((a, b) => {
@@ -434,7 +373,6 @@ async function init() {
   currentSettings = settings;
   initSettings(settings);
   applyLayout(settings);
-  setupResponsiveLayout();
   detailsState = await loadState();
   loadBookmarks();
   loadTabs();

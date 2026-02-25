@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(pnpm run build)"
+      "Bash(pnpm run build)",
+      "Bash(pnpm run clean)",
+      "Bash(pnpm run copy)",
+      "Bash(pnpm run compile)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(mise exec -- pnpm run build)"
     ]
   }
 }

@@ -41,6 +41,7 @@ html.dark {
 @layer base {
   details {
     @apply ml-3;
+    break-inside: avoid;
   }
 
   details>summary {

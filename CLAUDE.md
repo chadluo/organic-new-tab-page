@@ -14,7 +14,7 @@ Chrome extension (Manifest V3) that replaces the new tab page with bookmarks and
 ## Build
 
 ```bash
-pnpm run build    # clean → copy → compile (tsc) → css (tailwindcss CLI)
+mise exec -- pnpm run build    # clean → copy → compile (tsc) → css (tailwindcss CLI)
 ```
 
 Individual steps: `pnpm run clean`, `pnpm run copy`, `pnpm run compile`, `pnpm run css`
@@ -28,7 +28,6 @@ Single-page extension with two source files:
 - **`src/newtab.ts`** — All new tab page logic: settings management, theme system, responsive grid layout, bookmark tree
   rendering, tab/window rendering, live Chrome API event listeners, and two web components (`<bookmark-link>`,
   `<tab-link>`)
-- **`src/background.ts`** — Minimal service worker (install listener only)
 - **`newtab.html`** — HTML structure with `<template>` elements for web components, settings dialog, and grid layout
   container
 - **`styles.css`** — Tailwind v4 config (`@theme` variables, `@utility`, `@layer base/components`), dark mode via

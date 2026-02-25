@@ -21,15 +21,11 @@
         class="hostname text-hostname text-[0.85em]"></span></span>
   </template>
 
-  <div id="layout-grid" class="grid gap-x-8">
-    <div id="bookmarks-section" class="grid grid-cols-subgrid content-start pt-2">
-      <h2 class="col-span-full text-[1.1rem] font-semibold m-0 mb-3 text-heading uppercase tracking-wider">Bookmarks
-      </h2>
-    </div>
-    <div id="tabs-section" class="grid grid-cols-subgrid content-start pt-2">
-      <h2 class="col-span-full text-[1.1rem] font-semibold m-0 mb-3 text-heading uppercase tracking-wider">Open Tabs
-      </h2>
-    </div>
+  <div id="layout-grid" class="grid grid-rows-[auto_1fr] gap-x-8">
+    <h2 class="text-[1.1rem] font-semibold m-0 mb-3 text-heading uppercase tracking-wider">Bookmarks</h2>
+    <h2 class="text-[1.1rem] font-semibold m-0 mb-3 text-heading uppercase tracking-wider">Open Tabs</h2>
+    <div id="bookmarks-section" class="content-start"></div>
+    <div id="tabs-section" class="content-start"></div>
   </div>
   <div id="settings-bar"
     class="fixed bottom-0 left-0 w-screen flex items-center justify-center gap-8 py-3 text-hostname text-sm bg-surface border-t border-hostname/10">
