@@ -200,6 +200,20 @@ class TabLink extends HTMLElement {
     const faviconOverride = this.getAttribute("favicon") ?? "";
     populateLink(content, url, faviconOverride);
     this.appendChild(content);
+
+    this.addEventListener("mouseenter", () => {
+      document
+        .querySelectorAll(`tab-link[url="${CSS.escape(url)}"]`)
+        .forEach((el) => {
+          if (el !== this) el.classList.add("duplicate-highlight");
+        });
+    });
+
+    this.addEventListener("mouseleave", () => {
+      document
+        .querySelectorAll(".duplicate-highlight")
+        .forEach((el) => el.classList.remove("duplicate-highlight"));
+    });
   }
 }
 

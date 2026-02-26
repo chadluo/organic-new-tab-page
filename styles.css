@@ -76,6 +76,10 @@ html.dark {
   tab-link {
     @apply flex items-start gap-1.5;
   }
+
+  tab-link.duplicate-highlight {
+    @apply bg-link/10 rounded-sm;
+  }
 }
 
 @utility group-grey {
