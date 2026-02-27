@@ -94,6 +94,27 @@ function initSettings(settings: UserSettings) {
     saveSettings(settings);
     applyLayout(settings);
   });
+
+  document.getElementById("collapse-bookmarks")!.addEventListener("click", () => {
+    document.querySelectorAll<HTMLDetailsElement>("#bookmarks-section details")
+      .forEach((d) => {
+        d.open = false;
+      });
+    for (const key in detailsState) {
+      if (key.startsWith("bookmark:")) detailsState[key] = false;
+    }
+    saveState(detailsState);
+  });
+
+  document.getElementById("collapse-tabs")!.addEventListener("click", () => {
+    document.querySelectorAll<HTMLDetailsElement>("#tabs-section details").forEach((d) => {
+      d.open = false;
+    });
+    for (const key in detailsState) {
+      if (key.startsWith("window:") || key.startsWith("tabgroup:")) detailsState[key] = false;
+    }
+    saveState(detailsState);
+  });
 }
 
 let currentSettings: UserSettings = defaultSettings;
