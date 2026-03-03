@@ -195,6 +195,12 @@ class BookmarkLink extends HTMLElement {
     const url = this.getAttribute("url") ?? "";
     const a = content.querySelector("a") as HTMLAnchorElement;
     a.href = url;
+    if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.update({ url });
+      });
+    }
     setSoftWrappingTitle(a, this.getAttribute("title") || url);
     populateLink(content, url);
     this.appendChild(content);
