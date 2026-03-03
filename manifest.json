@@ -7,15 +7,15 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-  "description": "A Chrome extension that creates an organic, customizable new tab page experience.",
+  "description": "New tab page showing bookmarks and open tabs",
   "manifest_version": 3,
   "name": "Organic New Tab Page",
   "permissions": [
-    "storage",
     "bookmarks",
-    "tabs",
+    "favicon",
+    "storage",
     "tabGroups",
-    "favicon"
+    "tabs"
   ],
-  "version": "0.3"
+  "version": "1.0"
 }

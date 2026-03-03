@@ -1,6 +1,6 @@
 {
   "name": "organic-new-tab-page",
-  "version": "1.0.0",
+  "version": "1.0",
   "description": "",
   "main": "background.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "copy": "cross-os copy",
     "css": "npx @tailwindcss/cli -i styles.css -o dist/styles.css",
     "compile": "tsc",
-    "build": "npm run clean && npm run copy && npm run compile && npm run css"
+    "build": "npm run clean && npm run copy && npm run compile && npm run css",
+    "zip": "npm run build && cd dist && zip -r ../organic-new-tab-page-$npm_package_version.zip ."
   },
   "cross-os": {
     "clean": {

@@ -39,13 +39,14 @@ html.dark {
 }
 
 @layer base {
+
   #bookmarks-section,
   #tabs-section {
     column-gap: 2rem;
   }
 
-  #bookmarks-section > h2,
-  #tabs-section > h2 {
+  #bookmarks-section>h2,
+  #tabs-section>h2 {
     column-span: all;
   }
 
