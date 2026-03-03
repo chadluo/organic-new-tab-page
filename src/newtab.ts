@@ -120,11 +120,11 @@ function initSettings(settings: UserSettings) {
 let currentSettings: UserSettings = defaultSettings;
 
 function applyLayout(settings: UserSettings) {
-  const grid = document.getElementById("layout-grid")!;
   const bookmarksSection = document.getElementById("bookmarks-section")!;
   const tabsSection = document.getElementById("tabs-section")!;
 
-  grid.style.gridTemplateColumns = `${settings.bookmarkColumns}fr ${settings.tabColumns}fr`;
+  bookmarksSection.style.flex = String(settings.bookmarkColumns);
+  tabsSection.style.flex = String(settings.tabColumns);
   bookmarksSection.style.columns = String(settings.bookmarkColumns);
   tabsSection.style.columns = String(settings.tabColumns);
 }
@@ -277,7 +277,8 @@ function renderBookmarkNode(
 function loadBookmarks() {
   chrome.bookmarks.getTree((tree) => {
     const section = document.getElementById("bookmarks-section")!;
-    section.replaceChildren();
+    const heading = section.querySelector("h2")!;
+    section.replaceChildren(heading);
 
     // Collect top-level folders (Bookmarks Bar, Other Bookmarks)
     const topFolders: chrome.bookmarks.BookmarkTreeNode[] = [];
@@ -316,7 +317,8 @@ async function loadTabs() {
   const groups = await chrome.tabGroups.query({});
   const groupMap = new Map(groups.map((g) => [g.id, g]));
   const section = document.getElementById("tabs-section")!;
-  section.replaceChildren();
+  const heading = section.querySelector("h2")!;
+  section.replaceChildren(heading);
 
   // Sort windows by most recently accessed tab, latest first
   windows.sort((a, b) => {
